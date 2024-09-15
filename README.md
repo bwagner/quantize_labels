@@ -2,7 +2,7 @@
 
 Quantizes Audacity labels according to a reference label track.
 
-```
+```console
                                                                                                                                                              
  Usage: quantize_labels.py [OPTIONS] REFERENCE_FILE TARGET_FILE                                                                                              
                                                                                                                                                              
