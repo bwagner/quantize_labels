@@ -25,5 +25,15 @@ Quantizes Audacity labels according to a reference label track.
 - simplify
 - notify when there were no changes.
 
+## Contribute
+```console
+pre-commit install
+```
+if this fails
+```
+pip install pre-commit
+```
+(see [pre-commit](https://pre-commit.com/))
+
 ## See also
 [rebuildap](https://github.com/bwagner/rebuildap), [shift_labels](https://github.com/bwagner/shift_labels), [pyaudacity](https://github.com/bwagner/pyaudacity)
