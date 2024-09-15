@@ -24,3 +24,6 @@ Quantizes Audacity labels according to a reference label track.
 - more generators
 - simplify
 - notify when there were no changes.
+
+## See also
+[rebuildap](https://github.com/bwagner/rebuildap), [shift_labels](https://github.com/bwagner/shift_labels), [pyaudacity](https://github.com/bwagner/pyaudacity)
