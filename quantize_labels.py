@@ -16,7 +16,7 @@ def file_line_generator(file_path: str) -> Generator[str, None, None]:
 
 
 def read_labels(
-    lines: Generator[str, None, None]
+    lines: Generator[str, None, None],
 ) -> Generator[Union[float, Tuple[float, float, str]], None, None]:
     """
     Generator to parse label times from lines of a file.
@@ -92,6 +92,12 @@ def quantize_labels(
 def main(
     reference_file: str = typer.Argument(..., help="Path to the reference label file."),
     target_file: str = typer.Argument(..., help="Path to the target label file."),
+    inplace: bool = typer.Option(
+        False,
+        "--inplace",
+        "-i",
+        help="Apply quantizations directly to the TARGET_FILE.",
+    ),
     verbose: bool = typer.Option(
         False, "--verbose", "-v", help="Enable verbose output."
     ),
@@ -104,6 +110,8 @@ def main(
     reference_gen = read_labels(reference_lines)
     target_gen = read_labels(target_lines)
 
+    output_lines = []
+
     # Initialize totals for summary statistics
     total_adjustment = 0
     count = 0
@@ -113,7 +121,8 @@ def main(
         if isinstance(result, tuple) and len(result) == 5:
             # Audacity label format
             nearest_start, nearest_end, label, start_adjustment, end_adjustment = result
-            print(f"{nearest_start}\t{nearest_end}\t{label}")
+            line = f"{nearest_start}\t{nearest_end}\t{label}"
+            output_lines.append(line)
 
             # Verbose output
             if verbose:
@@ -133,7 +142,8 @@ def main(
         elif isinstance(result, tuple) and len(result) == 2:
             # Single-column format
             nearest_reference, adjustment = result
-            print(f"{nearest_reference}")
+            line = f"{nearest_reference}"
+            output_lines.append(line)
 
             # Verbose output
             if verbose:
@@ -142,6 +152,13 @@ def main(
             # Update total adjustments and count
             total_adjustment += abs(adjustment)
             count += 1
+
+    # Output to file or stdout
+    if inplace:
+        with open(target_file, "w") as f:
+            f.write("\n".join(output_lines) + "\n")
+    else:
+        print("\n".join(output_lines))
 
     # Calculate summary statistics
     if count > 0:
