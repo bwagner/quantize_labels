@@ -13,6 +13,7 @@ Quantizes Audacity labels according to a reference label track.
 │ *    target_file         TEXT  Path to the target label file. [default: None] [required]                                                                  │
 ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 ╭─ Options ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ --inplace  -i        Apply quantizations directly to the TARGET_FILE.                                                                                     │
 │ --verbose  -v        Enable verbose output.                                                                                                               │
 │ --help               Show this message and exit.                                                                                                          │
 ╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
