@@ -11,8 +11,7 @@ def file_line_generator(file_path: str) -> Generator[str, None, None]:
     Generator that yields lines from a file, ensuring the file handle stays open during iteration.
     """
     with open(file_path, "r") as file:
-        for line in file:
-            yield line
+        yield from file
 
 
 def read_labels(
@@ -34,7 +33,7 @@ def read_labels(
             start_time = float(parts[0])
             end_time = float(parts[1])
             label = parts[2] if len(parts) > 2 else ""
-            yield (start_time, end_time, label)
+            yield start_time, end_time, label
 
 
 def quantize_labels(
@@ -86,7 +85,7 @@ def quantize_labels(
             adjustment = nearest_reference - target_label
 
             # Yield the adjusted label and adjustment
-            yield (nearest_reference, adjustment)
+            yield nearest_reference, adjustment
 
 
 def main(
@@ -161,11 +160,7 @@ def main(
         print("\n".join(output_lines))
 
     # Calculate summary statistics
-    if count > 0:
-        avg_adjustment = total_adjustment / count
-    else:
-        avg_adjustment = 0
-
+    avg_adjustment = total_adjustment / count if count > 0 else 0
     # Print summary to stderr
     summary_message = (
         f"\nTotal adjustment: {total_adjustment:.6f} seconds\n"
