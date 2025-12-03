@@ -37,4 +37,9 @@ pip install pre-commit
 (see [pre-commit](https://pre-commit.com/))
 
 ## See also
-[beats2bars](https://github.com/bwagner/beats2bars), [rebuildap](https://github.com/bwagner/rebuildap), [shift_labels](https://github.com/bwagner/shift_labels), [audacity_legatize](https://github.com/bwagner/audacity_legatize), [pyaudacity](https://github.com/bwagner/pyaudacity)
+- [rebuildap](https://github.com/bwagner/rebuildap)
+- [audacity_click_label](https://github.com/bwagner/audacity_click_label)
+- [beats2bars](https://github.com/bwagner/beats2bars)
+- [shift_labels](https://github.com/bwagner/shift_labels)
+- [audacity_legatize](https://github.com/bwagner/audacity_legatize)
+- [pyaudacity](https://github.com/bwagner/pyaudacity)
