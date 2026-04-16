@@ -6,6 +6,17 @@ import pytest
 
 import quantize_labels as ql
 
+SCRIPT = Path(__file__).parent / "quantize_labels.py"
+
+
+def _run(*args, check=True):
+    return subprocess.run(
+        [sys.executable, str(SCRIPT), *args],
+        capture_output=True,
+        text=True,
+        check=check,
+    )
+
 
 def test_parse_args_minimal():
     ns = ql.parse_args(["ref.txt", "tgt.txt"])
@@ -100,3 +111,87 @@ def test_changes_no_already_quantized_notification(tmp_path: Path):
         check=True,
     )
     assert "already quantized" not in result.stderr.lower()
+
+
+# ---- unit: read_labels ----
+
+
+def test_read_labels_single_column():
+    result = list(ql.read_labels(iter(["0.0\n", "1.5\n", "2.75\n"])))
+    assert result == [0.0, 1.5, 2.75]
+
+
+def test_read_labels_audacity_format():
+    result = list(ql.read_labels(iter(["0.0\t1.0\tfoo\n", "1.0\t2.5\tbar\n"])))
+    assert result == [(0.0, 1.0, "foo"), (1.0, 2.5, "bar")]
+
+
+def test_read_labels_audacity_no_label():
+    result = list(ql.read_labels(iter(["0.0\t1.0\n"])))
+    assert result == [(0.0, 1.0, "")]
+
+
+# ---- unit: quantize_labels ----
+
+
+def test_quantize_single_column_snaps_to_nearest():
+    ref = iter([0.0, 1.0, 2.0])
+    tgt = iter([0.1, 0.9, 2.2])
+    result = list(ql.quantize_labels(ref, tgt))
+    assert [r[0] for r in result] == [0.0, 1.0, 2.0]
+
+
+def test_quantize_audacity_snaps_start_and_end_independently():
+    ref = iter([0.0, 1.0, 2.0])
+    tgt = iter([(0.1, 0.9, "x")])
+    ((nearest_start, nearest_end, label, ds, de),) = ql.quantize_labels(ref, tgt)
+    assert (nearest_start, nearest_end, label) == (0.0, 1.0, "x")
+    assert ds == pytest.approx(-0.1)
+    assert de == pytest.approx(0.1)
+
+
+# ---- e2e: --inplace ----
+
+
+def test_inplace_rewrites_target_and_empties_stdout(tmp_path: Path):
+    ref = tmp_path / "ref.txt"
+    tgt = tmp_path / "tgt.txt"
+    ref.write_text("0.0\n1.0\n2.0\n")
+    tgt.write_text("0.1\n0.9\n2.2\n")
+    result = _run(str(ref), str(tgt), "-i")
+    assert result.stdout == ""
+    assert tgt.read_text().strip().splitlines() == ["0.0", "1.0", "2.0"]
+
+
+# ---- e2e: --verbose ----
+
+
+def test_verbose_emits_per_label_stderr(tmp_path: Path):
+    ref = tmp_path / "ref.txt"
+    tgt = tmp_path / "tgt.txt"
+    ref.write_text("0.0\n1.0\n")
+    tgt.write_text("0.1\n0.9\n")
+    result = _run(str(ref), str(tgt), "-v")
+    assert "Adjusted" in result.stderr
+
+
+# ---- edge cases ----
+
+
+def test_empty_target_does_not_crash(tmp_path: Path):
+    ref = tmp_path / "ref.txt"
+    tgt = tmp_path / "tgt.txt"
+    ref.write_text("0.0\n1.0\n")
+    tgt.write_text("")
+    result = _run(str(ref), str(tgt))
+    assert result.stdout.strip() == ""
+    assert "already quantized" not in result.stderr.lower()
+
+
+def test_malformed_input_exits_nonzero(tmp_path: Path):
+    ref = tmp_path / "ref.txt"
+    tgt = tmp_path / "tgt.txt"
+    ref.write_text("0.0\n1.0\n")
+    tgt.write_text("not-a-number\n")
+    result = _run(str(ref), str(tgt), check=False)
+    assert result.returncode != 0
