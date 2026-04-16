@@ -62,3 +62,41 @@ def test_end_to_end_single_column(tmp_path: Path):
     )
     lines = result.stdout.strip().splitlines()
     assert lines == ["0.0", "1.0", "2.0"]
+
+
+def test_already_quantized_notification(tmp_path: Path):
+    ref = tmp_path / "ref.txt"
+    tgt = tmp_path / "tgt.txt"
+    ref.write_text("0.0\n1.0\n2.0\n")
+    tgt.write_text("0.0\n1.0\n2.0\n")
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(Path(__file__).parent / "quantize_labels.py"),
+            str(ref),
+            str(tgt),
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert "already quantized" in result.stderr.lower()
+
+
+def test_changes_no_already_quantized_notification(tmp_path: Path):
+    ref = tmp_path / "ref.txt"
+    tgt = tmp_path / "tgt.txt"
+    ref.write_text("0.0\n1.0\n2.0\n")
+    tgt.write_text("0.1\n0.9\n2.2\n")
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(Path(__file__).parent / "quantize_labels.py"),
+            str(ref),
+            str(tgt),
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert "already quantized" not in result.stderr.lower()

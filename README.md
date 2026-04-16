@@ -34,10 +34,8 @@ Run directly:
 ```
 
 ## TODO
-- tests
 - more generators
 - simplify
-- notify when there were no changes.
 
 ## Contribute
 ```console

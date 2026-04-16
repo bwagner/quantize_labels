@@ -162,6 +162,8 @@ def main(
         f"Average adjustment: {avg_adjustment:.6f} seconds\n"
     )
     print(summary_message, file=sys.stderr)
+    if count > 0 and total_adjustment == 0:
+        print("Already quantized: no changes needed.", file=sys.stderr)
 
 
 def parse_args(argv=None):
