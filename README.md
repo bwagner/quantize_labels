@@ -17,6 +17,16 @@ options:
   -v, --verbose   Enable verbose output.
 ```
 
+## Behavior
+
+The reference file defines a grid of time points. Each target boundary snaps
+to the nearest point on that grid.
+
+- **Single-column reference** — each line is one time point.
+- **Audacity reference** (`start\tend\tlabel`) — both `start` and `end` of
+  every reference row contribute to the grid, so a target end near a reference
+  end will snap to that end rather than to a distant reference start.
+
 ## Install
 
 The script uses a [uv](https://docs.astral.sh/uv/) shebang with PEP 723 inline

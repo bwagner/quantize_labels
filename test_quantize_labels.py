@@ -150,6 +150,39 @@ def test_quantize_audacity_snaps_start_and_end_independently():
     assert de == pytest.approx(0.1)
 
 
+# ---- e2e: audacity format ----
+
+
+def test_end_to_end_audacity(tmp_path: Path):
+    # Flat-grid semantics: target boundaries snap to the union of all
+    # reference start and end times.
+    ref = tmp_path / "ref.txt"
+    tgt = tmp_path / "tgt.txt"
+    ref.write_text("0.0\t0.5\t\n1.0\t1.5\t\n2.0\t2.5\t\n")
+    tgt.write_text("0.1\t0.4\tA\n1.1\t1.4\tB\n")
+    result = _run(str(ref), str(tgt))
+    lines = result.stdout.strip().splitlines()
+    assert lines == ["0.0\t0.5\tA", "1.0\t1.5\tB"]
+
+
+def test_audacity_end_snaps_to_reference_end(tmp_path: Path):
+    # Target end near a reference END should snap to that end, not to a
+    # distant reference START.
+    ref = tmp_path / "ref.txt"
+    tgt = tmp_path / "tgt.txt"
+    ref.write_text("0.0\t0.5\t\n1.0\t1.5\t\n")
+    tgt.write_text("0.1\t0.6\tA\n")
+    result = _run(str(ref), str(tgt))
+    assert result.stdout.strip().splitlines() == ["0.0\t0.5\tA"]
+
+
+def test_quantize_audacity_end_snaps_to_reference_end():
+    ref = iter([(0.0, 0.5, ""), (1.0, 1.5, "")])
+    tgt = iter([(0.1, 0.6, "A")])
+    ((ns, ne, lbl, _, _),) = ql.quantize_labels(ref, tgt)
+    assert (ns, ne, lbl) == (0.0, 0.5, "A")
+
+
 # ---- e2e: --inplace ----
 
 

@@ -49,13 +49,16 @@ def quantize_labels(
     Supports both single-column and Audacity label formats for reference and target labels.
     Yields the adjusted labels along with the adjustments made for further processing.
     """
-    # Extract start times from reference labels for quantization
-    reference_list = [
-        (
-            ref if isinstance(ref, float) else ref[0]
-        )  # Use start time if it's an Audacity label
-        for ref in reference_gen
-    ]
+    # Flatten reference to a grid of time points. For Audacity-format
+    # references include both the start and end of each label, so target
+    # boundaries can snap to either.
+    reference_list = []
+    for ref in reference_gen:
+        if isinstance(ref, float):
+            reference_list.append(ref)
+        else:
+            reference_list.append(ref[0])
+            reference_list.append(ref[1])
 
     for target_label in target_gen:
         if isinstance(target_label, tuple):
