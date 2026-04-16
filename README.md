@@ -20,6 +20,21 @@ Quantizes Audacity labels according to a reference label track.
 
 ```
 
+## Install
+
+The script uses a [uv](https://docs.astral.sh/uv/) shebang with PEP 723 inline
+metadata, so dependencies (e.g. `typer`) are resolved automatically on first run.
+
+Install `uv`:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Run directly:
+```bash
+./quantize_labels.py REFERENCE_FILE TARGET_FILE
+```
+
 ## TODO
 - tests
 - more generators
