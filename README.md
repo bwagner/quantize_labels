@@ -3,27 +3,25 @@
 Quantizes Audacity labels according to a reference label track.
 
 ```console
+usage: quantize_labels.py [-h] [-i] [-v] reference_file target_file
 
- Usage: quantize_labels.py [OPTIONS] REFERENCE_FILE TARGET_FILE
+Quantize labels in the target file to the reference file.
 
- Quantize labels in the target file to the reference file.
+positional arguments:
+  reference_file  Path to the reference label file.
+  target_file     Path to the target label file.
 
-╭─ Arguments ───────────────────────────────────────────────────────────────────────────────────╮
-│ *    reference_file      TEXT  Path to the reference label file. [default: None] [required]   │
-│ *    target_file         TEXT  Path to the target label file. [default: None] [required]      │
-╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ─────────────────────────────────────────────────────────────────────────────────────╮
-│ --inplace  -i        Apply quantizations directly to the TARGET_FILE.                         │
-│ --verbose  -v        Enable verbose output.                                                   │
-│ --help               Show this message and exit.                                              │
-╰───────────────────────────────────────────────────────────────────────────────────────────────╯
-
+options:
+  -h, --help      show this help message and exit
+  -i, --inplace   Apply quantizations directly to the TARGET_FILE.
+  -v, --verbose   Enable verbose output.
 ```
 
 ## Install
 
 The script uses a [uv](https://docs.astral.sh/uv/) shebang with PEP 723 inline
-metadata, so dependencies (e.g. `typer`) are resolved automatically on first run.
+metadata. Only the standard library is required; uv still provisions a suitable
+Python interpreter automatically on first run.
 
 Install `uv`:
 ```bash

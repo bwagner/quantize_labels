@@ -1,13 +1,11 @@
 #!/usr/bin/env -S uv run --script
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["typer"]
+# dependencies = []
 # ///
 
 import sys
 from typing import Generator, Tuple, Union
-
-import typer
 
 
 def file_line_generator(file_path: str) -> Generator[str, None, None]:
@@ -93,17 +91,10 @@ def quantize_labels(
 
 
 def main(
-    reference_file: str = typer.Argument(..., help="Path to the reference label file."),
-    target_file: str = typer.Argument(..., help="Path to the target label file."),
-    inplace: bool = typer.Option(
-        False,
-        "--inplace",
-        "-i",
-        help="Apply quantizations directly to the TARGET_FILE.",
-    ),
-    verbose: bool = typer.Option(
-        False, "--verbose", "-v", help="Enable verbose output."
-    ),
+    reference_file: str,
+    target_file: str,
+    inplace: bool = False,
+    verbose: bool = False,
 ):
     """Quantize labels in the target file to the reference file."""
     # Use file_line_generator within the context of the main function to keep the file handle open
@@ -173,5 +164,31 @@ def main(
     print(summary_message, file=sys.stderr)
 
 
+def parse_args(argv=None):
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Quantize labels in the target file to the reference file."
+    )
+    parser.add_argument("reference_file", help="Path to the reference label file.")
+    parser.add_argument("target_file", help="Path to the target label file.")
+    parser.add_argument(
+        "-i",
+        "--inplace",
+        action="store_true",
+        help="Apply quantizations directly to the TARGET_FILE.",
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="Enable verbose output."
+    )
+    return parser.parse_args(argv)
+
+
 if __name__ == "__main__":
-    typer.run(main)
+    args = parse_args()
+    main(
+        reference_file=args.reference_file,
+        target_file=args.target_file,
+        inplace=args.inplace,
+        verbose=args.verbose,
+    )
