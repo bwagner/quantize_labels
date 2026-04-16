@@ -43,10 +43,6 @@ Run directly:
 ./quantize_labels.py REFERENCE_FILE TARGET_FILE
 ```
 
-## TODO
-- more generators
-- simplify
-
 ## Contribute
 ```console
 pre-commit install
